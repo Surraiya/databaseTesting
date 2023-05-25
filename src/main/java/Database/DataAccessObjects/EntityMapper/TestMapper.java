@@ -11,8 +11,8 @@ import static Database.DataEntity.EntityColumns.Columns.*;
 import static Database.DataEntity.EntityColumns.TestColumns.*;
 
 public class TestMapper {
-
-    public static void mapTestToStatement(PreparedStatement preparedStatement, Test test, long id) throws SQLException {
+    
+    public static void mapTestToInsertStatement(PreparedStatement preparedStatement, Test test) throws SQLException {
         preparedStatement.setString(FIRST.index, test.getName());
         preparedStatement.setLong(SECOND.index, test.getAuthor_id());
         preparedStatement.setLong(THIRD.index, test.getProject_id());
@@ -23,14 +23,6 @@ public class TestMapper {
         preparedStatement.setObject(EIGHTH.index, test.getStart_time());
         preparedStatement.setObject(NINTH.index, test.getEnd_time());
         preparedStatement.setInt(TENTH.index, test.getStatus_id());
-
-        if(id != 0){
-            preparedStatement.setLong(ELEVENTH.index, id);
-        }
-    }
-
-    public static void mapTestToInsertStatement(PreparedStatement preparedStatement, Test test) throws SQLException {
-        mapTestToStatement(preparedStatement, test, 0);
     }
 
     public static Test extractTestFromResultSet(ResultSet resultSet) throws SQLException {
