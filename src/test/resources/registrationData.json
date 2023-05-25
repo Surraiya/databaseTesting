@@ -1,0 +1,12 @@
+{
+  "minPassLength": 10,
+  "minCapitalLetter": 1,
+  "minNumeralChar": 1,
+  "minCyrillicChar": 1,
+  "minEmailChar": 5,
+  "maxEmailChar": 10,
+  "dropDownOptionText": ".com",
+  "numOfRandomInterest": 3,
+  "image": ".src/test/resources/testData/download.png",
+  "filename": "uploadPhoto.jpg"
+}
