@@ -1,0 +1,18 @@
+{
+  "project": {
+    "name": "Database Testing Task1",
+    "env": "Java",
+    "browser": "chrome",
+    "author": {
+      "name": "Surraiya Islam Tonni",
+      "login": "tee",
+      "email": "surraiyaislamtonni@gmail.com"
+    },
+    "session": {
+      "buildNumber": 20230524,
+      "key": "abc123xyz"
+    },
+    "testNumber": 10,
+    "statusId": 3
+  }
+}
