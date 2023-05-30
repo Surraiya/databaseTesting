@@ -1,102 +1,101 @@
 package Database.DataAccessObjects.Implementation;
 
-import Database.Connection.DatabaseConnection;
 import Database.DataAccessObjects.Interface.ITestDao;
 import Database.DataEntity.Entities.Test;
 import Database.DataEntity.EntityColumns.TestColumns;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static Database.DataAccessObjects.EntityMapper.TestMapper.*;
-import static Database.DataEntity.EntityColumns.Columns.FIRST;
-import static Database.DataEntity.EntityColumns.Columns.SECOND;
+import static Database.DataAccessObjects.ResultSetMapper.TestMapper.*;
 import static Database.DataEntity.EntityColumns.TestColumns.*;
+import static Database.DbExecuteQueryUtil.*;
+import static Utilities.RandomGenerator.getRandomInteger;
 
 
 public class TestDao implements ITestDao {
 
-    private final Connection connection;
-    private Statement statement;
-    private PreparedStatement preparedStatement;
-    private ResultSet resultSet;
     private final String addTestQuery = String.format("INSERT INTO test(%s) VALUES (?,?,?,?,?,?,?,?,?,?)",
             Stream.of(TestColumns.values())
                     .filter(column -> column != ID)
                     .map(column -> column.columnName)
                     .collect(Collectors.joining(",")));
     private final String getAllTestsQuery = "SELECT * FROM test";
-    private final String getTestByNameQuery = String.format("SELECT * FROM test WHERE %s = ?", NAME.columnName);
+    private final String getTestByIdQuery = String.format("SELECT * FROM test WHERE %s = ?", ID.columnName);
     private final String getTestByTwoRepeatingDigitIdQuery = String.format("SELECT * FROM test WHERE %s REGEXP '[0-9]*([0-9])\\1[0-9]*' ORDER BY RAND() LIMIT ?", ID.columnName);
     private final String deleteTestQuery = String.format("DELETE FROM test WHERE %s = ?",ID.columnName);
     private final String updateStatusIdQuery = String.format("UPDATE test SET %s = ? WHERE %s = ?",
             STATUS_ID.columnName,
             ID.columnName);
 
-    public TestDao(){
-        connection = DatabaseConnection.getDatabaseConnection();
+
+    @Override
+    public int addTest(Test test) {
+        Object[] parameters = {
+                test.getName(),
+                test.getAuthor_id(),
+                test.getProject_id(),
+                test.getSession_id(),
+                test.getEnv(),
+                test.getBrowser(),
+                test.getMethod_name(),
+                test.getStart_time(),
+                test.getEnd_time(),
+                test.getStatus_id()
+        };
+        return executeAndGetGeneratedId(addTestQuery, parameters);
     }
 
     @Override
-    public boolean addTest(Test test) throws SQLException {
-        preparedStatement = connection.prepareStatement(addTestQuery);
-        mapTestToInsertStatement(preparedStatement,test);
-        return preparedStatement.execute();
+    public List<Test> getAllTests() {
+        ResultSet resultSet = executeQueryWithoutParameter(getAllTestsQuery);
+        return extractTestsFromResultSet(resultSet);
     }
 
     @Override
-    public List<Test> getAllTests() throws SQLException {
-        statement = connection.createStatement();
-        resultSet = statement.executeQuery(getAllTestsQuery);
-        List<Test> tests = new ArrayList<>();
-        while (resultSet.next()){
-            tests.add(extractTestFromResultSet(resultSet));
-        }
-        return tests;
+    public Test getTestById(long id){
+        ResultSet resultSet = executeQueryWithoutParameter(getTestByIdQuery);
+        return extractTestFromResultSet(resultSet);
     }
 
     @Override
-    public Test getTestByName(String name) throws SQLException {
-        preparedStatement = connection.prepareStatement(getTestByNameQuery);
-        preparedStatement.setString(FIRST.index, name);
-        resultSet = preparedStatement.executeQuery();
+    public int updateStatusId(long testId, int currentStatusId, List<Integer> statusIds) {
+        List<Integer> remainingStatusIds = statusIds.stream()
+                .filter(id -> id != currentStatusId)
+                .collect(Collectors.toList());
 
-        return resultSet.next() ? extractTestFromResultSet(resultSet) : null;
+        int newStatusId = remainingStatusIds.get(getRandomInteger(remainingStatusIds.size()));
+
+        Object[] parameters = {
+                newStatusId,
+                testId
+        };
+
+        return executeUpdate(updateStatusIdQuery, parameters);
     }
 
     @Override
-    public boolean updateStatusId(Test test, int statusId) throws SQLException {
-        preparedStatement = connection.prepareStatement(updateStatusIdQuery);
-        preparedStatement.setInt(FIRST.index,statusId);
-        preparedStatement.setLong(SECOND.index,test.getId());
-        return preparedStatement.execute();
+    public int deleteTest(long id) {
+        Object[] parameters ={
+                id
+        };
+        return executeUpdate(deleteTestQuery, parameters);
     }
 
     @Override
-    public boolean deleteTest(long id) throws SQLException {
-        preparedStatement = connection.prepareStatement(deleteTestQuery);
-        preparedStatement.setLong(FIRST.index, id);
-        return preparedStatement.execute();
+    public List<Test> getTestByTwoRepeatingDigitId(int testNumber) {
+        Object[] parameters = {
+                testNumber
+        };
+        ResultSet resultSet = executeQueryWithParameter(getTestByTwoRepeatingDigitIdQuery, parameters);
+        return extractTestsFromResultSet(resultSet);
     }
 
-    @Override
-    public List<Test> getTestByTwoRepeatingDigitId(int testNumber) throws SQLException {
-        preparedStatement = connection.prepareStatement(getTestByTwoRepeatingDigitIdQuery);
-        preparedStatement.setInt(FIRST.index, testNumber);
-        resultSet = preparedStatement.executeQuery();
-
-        List<Test> tests = new ArrayList<>();
-        while (resultSet.next()) {
-            tests.add(extractTestFromResultSet(resultSet));
-        }
-        return tests;
-    }
-
-    public boolean ifTestExistsInDb(String name) throws SQLException {
+    public boolean ifTestExistsInDb(long id) {
         List<Test> tests = getAllTests();
-        return tests.stream().anyMatch(test -> test.getName().equals(name));
+        return tests.stream()
+                .anyMatch(test -> test.getId() == id);
     }
 }
