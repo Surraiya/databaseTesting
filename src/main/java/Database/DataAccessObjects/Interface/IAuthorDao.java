@@ -4,6 +4,7 @@ import Database.DataEntity.Entities.Author;
 
 public interface IAuthorDao {
 
-    int addAuthor(Author author);
-    Author getAuthorByLogin(String login);
+    long addAuthorAndGetId(Author author);
+    long getAuthorIdByLogin(String login);
+    int deleteAuthorById(long id);
 }

@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static Database.DataAccessObjects.ResultSetMapper.TestMapper.*;
 import static Database.DataEntity.EntityColumns.TestColumns.*;
-import static Database.DbExecuteQueryUtil.*;
-import static Utilities.RandomGenerator.getRandomInteger;
+import static Database.DbUtil.ExecuteQueryUtil.*;
+import static Database.DbUtil.ResultSetUtil.extractTestFromResultSet;
+import static Database.DbUtil.ResultSetUtil.extractTestsFromResultSet;
 
 
 public class TestDao implements ITestDao {
@@ -22,10 +22,12 @@ public class TestDao implements ITestDao {
                     .filter(column -> column != ID)
                     .map(column -> column.columnName)
                     .collect(Collectors.joining(",")));
-    private final String getAllTestsQuery = "SELECT * FROM test";
-    private final String getTestByIdQuery = String.format("SELECT * FROM test WHERE %s = ?", ID.columnName);
-    private final String getTestByTwoRepeatingDigitIdQuery = String.format("SELECT * FROM test WHERE %s REGEXP '[0-9]*([0-9])\\1[0-9]*' ORDER BY RAND() LIMIT ?", ID.columnName);
-    private final String deleteTestQuery = String.format("DELETE FROM test WHERE %s = ?",ID.columnName);
+    private final String getTestByIdQuery = String.format("SELECT * FROM test WHERE %s = ?",
+            ID.columnName);
+    private final String getTestsByTwoRepeatingDigitIdQuery = String.format("SELECT * FROM test WHERE %s REGEXP '([0-9])\\\\1' ORDER BY RAND() LIMIT ?",
+            ID.columnName);
+    private final String deleteTestQuery = String.format("DELETE FROM test WHERE %s = ?",
+            ID.columnName);
     private final String updateStatusIdQuery = String.format("UPDATE test SET %s = ? WHERE %s = ?",
             STATUS_ID.columnName,
             ID.columnName);
@@ -33,7 +35,16 @@ public class TestDao implements ITestDao {
 
     @Override
     public int addTest(Test test) {
-        Object[] parameters = {
+        return executeUpdate(addTestQuery, testParameters(test));
+    }
+
+    @Override
+    public long addTestAndGetId(Test test){
+        return executeAndGetGeneratedId(addTestQuery, testParameters(test));
+    }
+
+    private Object[] testParameters(Test test) {
+        return new Object[] {
                 test.getName(),
                 test.getAuthor_id(),
                 test.getProject_id(),
@@ -45,57 +56,27 @@ public class TestDao implements ITestDao {
                 test.getEnd_time(),
                 test.getStatus_id()
         };
-        return executeAndGetGeneratedId(addTestQuery, parameters);
-    }
-
-    @Override
-    public List<Test> getAllTests() {
-        ResultSet resultSet = executeQueryWithoutParameter(getAllTestsQuery);
-        return extractTestsFromResultSet(resultSet);
     }
 
     @Override
     public Test getTestById(long id){
-        ResultSet resultSet = executeQueryWithoutParameter(getTestByIdQuery);
-        return extractTestFromResultSet(resultSet);
+        ResultSet resultSet = executeQueryWithParameter(getTestByIdQuery, id);
+        return resultSet != null ? extractTestFromResultSet(resultSet) : null;
     }
 
     @Override
-    public int updateStatusId(long testId, int currentStatusId, List<Integer> statusIds) {
-        List<Integer> remainingStatusIds = statusIds.stream()
-                .filter(id -> id != currentStatusId)
-                .collect(Collectors.toList());
-
-        int newStatusId = remainingStatusIds.get(getRandomInteger(remainingStatusIds.size()));
-
-        Object[] parameters = {
-                newStatusId,
-                testId
-        };
-
-        return executeUpdate(updateStatusIdQuery, parameters);
+    public int updateStatusId(long testId, int newStatusId) {
+        return executeUpdate(updateStatusIdQuery, newStatusId, testId);
     }
 
     @Override
     public int deleteTest(long id) {
-        Object[] parameters ={
-                id
-        };
-        return executeUpdate(deleteTestQuery, parameters);
+        return executeUpdate(deleteTestQuery, id);
     }
 
     @Override
     public List<Test> getTestByTwoRepeatingDigitId(int testNumber) {
-        Object[] parameters = {
-                testNumber
-        };
-        ResultSet resultSet = executeQueryWithParameter(getTestByTwoRepeatingDigitIdQuery, parameters);
-        return extractTestsFromResultSet(resultSet);
-    }
-
-    public boolean ifTestExistsInDb(long id) {
-        List<Test> tests = getAllTests();
-        return tests.stream()
-                .anyMatch(test -> test.getId() == id);
+        ResultSet resultSet = executeQueryWithParameter(getTestsByTwoRepeatingDigitIdQuery, testNumber);
+        return resultSet != null ? extractTestsFromResultSet(resultSet) : null;
     }
 }
