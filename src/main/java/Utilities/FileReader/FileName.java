@@ -2,12 +2,12 @@ package Utilities.FileReader;
 
 public enum FileName {
     DATABASE("database"),
-    DB_TEST_DATA("dbTestData"),
+    CONFIG_DATA("configData"),
     SETTINGS("settings"),
     REGISTRATION("registrationData"),
     TIMER("timerTestData");
 
-    public String fileName;
+    public final String fileName;
 
     FileName(String fileName){
         this.fileName = fileName;

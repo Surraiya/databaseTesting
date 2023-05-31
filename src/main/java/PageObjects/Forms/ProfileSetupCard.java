@@ -1,7 +1,6 @@
 package PageObjects.Forms;
 
 import Utilities.FileUploader;
-import Utilities.JsonFileReader;
 import Utilities.RandomGenerator;
 import aquality.selenium.core.elements.ElementState;
 import aquality.selenium.core.elements.ElementsCount;

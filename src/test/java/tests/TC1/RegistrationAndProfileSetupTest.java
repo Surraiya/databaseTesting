@@ -2,12 +2,14 @@ package tests.TC1;
 
 import PageObjects.pages.GamePage;
 import PageObjects.pages.HomePage;
-import Utilities.JsonFileReader;
 import Utilities.RegistrationCardDataGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static Utilities.JsonFileReader.getIntValue;
+import static Utilities.FileReader.FileKeyName.RegistrationKeyName.*;
+import static Utilities.FileReader.FileName.REGISTRATION;
+import static Utilities.FileReader.JsonFileReader.getIntValue;
+import static Utilities.FileReader.JsonFileReader.getStringValue;
 
 public class RegistrationAndProfileSetupTest extends BaseTest {
 
@@ -28,15 +30,15 @@ public class RegistrationAndProfileSetupTest extends BaseTest {
 
         logger.info("3. Input random valid password, email, accept the terms of use and click 'next' button");
         String email = RegistrationCardDataGenerator.getEmailName(
-                getIntValue("registrationData","/minEmailChar"),
-                getIntValue("registrationData","/maxEmailChar")
+                getIntValue(REGISTRATION.fileName, MIN_EMAIL_CHAR.key),
+                getIntValue(REGISTRATION.fileName, MAX_EMAIL_CHAR.key)
         );
         String password = RegistrationCardDataGenerator.getRandomPassword(
-                getIntValue("registrationData","/minPassLength"),
+                getIntValue(REGISTRATION.fileName, MIN_PASS_LENGTH.key),
                 email,
-                getIntValue("registrationData","/minCapitalLetter"),
-                getIntValue("registrationData","/minNumeralChar"),
-                getIntValue("registrationData","/minCyrillicChar")
+                getIntValue(REGISTRATION.fileName, MIN_CAPITAL_LETTER.key),
+                getIntValue(REGISTRATION.fileName,MIN_NUMERICAL_CHAR.key),
+                getIntValue(REGISTRATION.fileName, MIN_CYRILLIC_CHAR.key)
         );
 
         gamePage.getRegistrationCard().setPassword(password);
@@ -52,8 +54,8 @@ public class RegistrationAndProfileSetupTest extends BaseTest {
 
 
         logger.info("4. Choose 2 random interests, upload image, click 'Next' button.");
-        gamePage.getProfileSetupCard().chooseRandomInterests(getIntValue("registrationData","/numOfRandomInterest"));
-        gamePage.getProfileSetupCard().uploadImage(JsonFileReader.getStringValue("registrationData","/filename"));
+        gamePage.getProfileSetupCard().chooseRandomInterests(getIntValue(REGISTRATION.fileName, NUM_OF_RANDOM_INTEREST.key));
+        gamePage.getProfileSetupCard().uploadImage(getStringValue(REGISTRATION.fileName, FILENAME.key));
         gamePage.getProfileSetupCard().clickNext();
 
         logger.info("The Card 3 is Open");

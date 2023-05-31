@@ -1,30 +1,17 @@
 {
-  "db": {
-    "url": "jdbc:mysql://localhost:3306",
-    "database": "/union_reporting",
-    "username": "root",
-    "password": "4427"
-  },
-  "project":{
-    "name1": "Database Testing Task1",
-    "name2": "Testing Task2",
+  "project": {
+    "name": "Database Testing Task1",
     "env": "Java",
     "browser": "chrome",
-    "author1": {
+    "author": {
       "name": "Surraiya Islam Tonni",
       "login": "tee",
       "email": "surraiyaislamtonni@gmail.com"
     },
-    "author2": {
-      "name": "Kakoli Apa",
-      "login": "Kaka",
-      "email": "test@gmail.com"
+    "session": {
+      "buildNumber": 20230524,
+      "key": "abc123xyz"
     }
   },
-  "session": {
-    "buildNumber": 20230524,
-    "key": "abc123xyz"
-  },
-  "testNumber": 10,
-  "statusId": 3
+  "testNumber": 10
 }

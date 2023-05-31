@@ -1,6 +1,7 @@
 package Database.DataEntity.EntityColumns;
 
 public enum TestColumns {
+
     ID("id"),
     NAME("name"),
     AUTHOR_ID("author_id"),

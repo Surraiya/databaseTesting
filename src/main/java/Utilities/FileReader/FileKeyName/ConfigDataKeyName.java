@@ -1,6 +1,6 @@
 package Utilities.FileReader.FileKeyName;
 
-public enum DbTestKeyName {
+public enum ConfigDataKeyName {
     PROJECT_NAME("/project/name"),
     ENV("/project/env"),
     BROWSER("/project/browser"),
@@ -11,9 +11,9 @@ public enum DbTestKeyName {
     SESSION_KEY("/project/session/key"),
     TEST_NUMBER("/testNumber");
 
-    public String key;
+    public final String key;
 
-    DbTestKeyName(String key){
+    ConfigDataKeyName(String key){
         this.key = key;
     }
 }
