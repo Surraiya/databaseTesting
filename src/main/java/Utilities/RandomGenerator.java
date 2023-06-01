@@ -2,7 +2,6 @@ package Utilities;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class RandomGenerator {
 
@@ -21,6 +20,6 @@ public class RandomGenerator {
                 .distinct()
                 .limit(count)
                 .boxed()
-                .collect(Collectors.toList());
+                .toList();
     }
 }

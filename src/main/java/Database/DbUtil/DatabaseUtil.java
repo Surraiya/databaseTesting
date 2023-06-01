@@ -9,7 +9,6 @@ import aquality.selenium.core.logging.Logger;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static Utilities.RandomGenerator.getRandomInteger;
 
@@ -102,7 +101,7 @@ public class DatabaseUtil {
     public static int selectRandomStatusId(int currentStatusId, List<Integer> statusIds){
         List<Integer> remainingStatusIds = statusIds.stream()
                 .filter(id -> id != currentStatusId)
-                .collect(Collectors.toList());
+                .toList();
 
         int newStatusId = remainingStatusIds.get(getRandomInteger(remainingStatusIds.size()));
         logger.info(String.format("New status id: %d", newStatusId));

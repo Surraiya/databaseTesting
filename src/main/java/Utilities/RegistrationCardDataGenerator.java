@@ -5,7 +5,6 @@ import org.passay.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static Utilities.RandomGenerator.getRandomInteger;
 
@@ -66,7 +65,7 @@ public class RegistrationCardDataGenerator {
     public static String getEmailDomain() {
         List<String> domains = Arrays.stream(domainsList.values())
                 .map(Enum::name)
-                .collect(Collectors.toList());
+                .toList();
         return domains.get(getRandomInteger(domains.size()));
     }
 
