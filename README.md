@@ -6,9 +6,9 @@ Running the project is dependent on deployment of MySQL database from dump.sql.
 This Project was part of A1QA automation testing internship.
 
 ## Technologies
-Project is created with:
+The project is created with the following technologies:
 
--Java 17
--TestNG 7.6.1
--Aquality Selenium
--MySQL 8.0.31
+- Java 17
+- TestNG 7.6.1
+- Aquality Selenium
+- MySQL 8.0.31
