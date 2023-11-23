@@ -50,6 +50,34 @@ This test case checks if the timer on the game page starts from 00:00:00.
 2. Navigate to the game page.
 3. Validate that the timer starts from 00:00:00.
 
+## MySQL Integration
+### Enhancements to BaseTest
+#### 1. Initialization and Cleanup:
+##### Initialization of Browser:
+The initializeBrowser method maximizes the browser window and navigates to the specified start URL, ensuring a consistent test environment.
+##### After Test Execution:
+The afterTestExecution method is responsible for cleaning up after each test execution.
+It quits the browser to release resources.
+Records the result of each completed test in the MySQL database as a new record in the Test table.
+#### 2. Database Integration:
+##### Data Retrieval and Saving:
+Retrieves necessary data such as author information, project details, and session data from configuration files.
+Utilizes the DatabaseUtil methods to save the test results into the Test table.
+##### Logging:
+Logs relevant information about the test execution, including author details, project details, session details, method name, start time, end time, and status.
+Provides detailed logging for debugging and tracking purposes.
+##### Connection Closure:
+Ensures proper closure of the database connection after recording the test result.
+
+## Setup and Usage:
+
+### Browser Initialization:
+Each test method inherits browser initialization and cleanup processes from BaseTest.
+### Database Configuration:
+Ensure that MySQL connection details are correctly configured in the CONFIG_DATA file.
+### Test Execution:
+Run your test suite, and after each test, the result will be recorded in the MySQL database.
+
 ## Project Structure
 
 - **`tests.TC1` Package:** Contains individual test classes for each test case.
